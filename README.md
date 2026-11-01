@@ -5,19 +5,17 @@ This program analyzes the data from Formula 1 to create graphs and compare diffe
 Create an easy to use F1 data analysis tool
 
 # MVP
-Retrieve and verify F1 data
-Determine which data is needed for analysis
-Allow use of the product
+Retrieve and verify F1 data, Determine which data is needed for analysis, Allow use of the product
 
 # Future plans
-Compare tire compounds and stints
-Analyze tire degradation trends
-Create a ranking of drivers based on average lap times
+- Compare tire compounds and stints
+- Analyze tire degradation trends
+- Create a ranking of drivers based on average lap times
 
 # Tech Stack
-What language are you writing in?
+- What language are you writing in?
 Python
-What libraries, packages, or external tools do you need?
+- What libraries, packages, or external tools do you need?
 I will need the following libraries:
 FastF1: Retrieve Formula 1 race data, including lap times, tyre compounds, and tyre age.
 Pandas: Organize, filter, and analyze the race data.
