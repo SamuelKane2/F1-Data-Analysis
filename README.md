@@ -5,7 +5,9 @@ This program analyzes the data from Formula 1 to create graphs and compare diffe
 Create an easy to use F1 data analysis tool
 
 # MVP
-Retrieve and verify F1 data, Determine which data is needed for analysis, Allow use of the product
+- Retrieve and verify F1 data
+- Determine which data is needed for analysis
+- Allow use of the product
 
 # Future plans
 - Compare tire compounds and stints
