@@ -14,7 +14,7 @@ Compare tire compounds and stints
 Analyze tire degradation trends
 Create a ranking of drivers based on average lap times
 
-#Tech Stack
+# Tech Stack
 What language are you writing in?
 Python
 What libraries, packages, or external tools do you need?
