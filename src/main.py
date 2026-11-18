@@ -68,27 +68,34 @@ while True:
 
 while True:
     want_accurate = input('Do you want to exclude inaccurate laps (yes, no)? ')
-    if (want_accurate.lower() == 'yes'):
+    if want_accurate.lower() == 'yes':
         accurate = True
         break
-    elif (want_accurate.lower() == 'no'):
+    elif want_accurate.lower() == 'no':
         accurate = False
         break
     else:
         print('yes or no please')
 
 # Picks out accurate laps for the driver
-if (accurate):
+if accurate:
     driver_laps = race.laps.pick_drivers(driver).pick_accurate()
 else:
     driver_laps = race.laps.pick_drivers(driver)
 
-# -----------Organize Data----------- #
-# Need, 'LapTime', 'LapNumber', 'Stint', 'Compound'
-#x = lap
-#y = laptime divided up by stints also somehow
+# -----------Analyzing the data----------- #
 driver_laps = driver_laps[['LapNumber', 'LapTime', 'Stint', 'Compound']]
-print(driver_laps)
+
+stints = driver_laps.groupby('Stint')
+
+for stint_num, stint_data in stints:
+    secs = stint_data['LapTime'].mean().total_seconds()
+    mins = secs // 60
+    average_lap_time = f'{mins:g}:{secs-mins*60:.3f}'
+    compound = str(stint_data['Compound'].iloc[0]).lower()
+
+    print(f'Stint #{stint_num} was on the {compound} tire had an average laptime of {average_lap_time}')
+    stint_num += 1
 
 # Saves the laps to a CSV file
 driver_laps.to_csv(f'../data/{driver}_laps.csv', index=False)
