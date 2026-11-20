@@ -93,9 +93,22 @@ for stint_num, stint_data in stints:
     mins = secs // 60
     average_lap_time = f'{mins:g}:{secs-mins*60:.3f}'
     compound = str(stint_data['Compound'].iloc[0]).lower()
-
     print(f'Stint #{stint_num} was on the {compound} tire had an average laptime of {average_lap_time}')
-    stint_num += 1
 
 # Saves the laps to a CSV file
 driver_laps.to_csv(f'../data/{driver}_laps.csv', index=False)
+
+# -----------Creating the graph----------- #
+
+#Enabling something
+fastf1.plotting.setup_mpl(mpl_timedelta_support=True, color_scheme="fastf1")
+
+fig, ax = pyplot.subplots()
+style = plotting.get_driver_style(identifier=driver,style=['color','linestyle'], session=race)
+lap_times = driver_laps['LapTime'].dt.total_seconds()
+ax.plot(driver_laps['LapNumber'], lap_times, **style, label=driver)
+
+ax.set_xlabel('Lap Number')
+ax.set_ylabel('Lap Time')
+ax.legend()
+pyplot.show()
