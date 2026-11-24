@@ -85,7 +85,7 @@ for stint_num, stint_data in stints:
     mins = secs // 60
     average_lap_time = f'{mins:g}:{secs-mins*60:.3f}'
     compound = str(stint_data['Compound'].iloc[0]).lower()
-    print(f'Stint #{stint_num} was on the {compound} tire had an average laptime of {average_lap_time}')
+    print(f'Stint #{int(stint_num)} was on the {compound} tire had an average laptime of {average_lap_time}')
 
 print()
 
@@ -97,10 +97,7 @@ for stint_num, stint_data in stints:
     average_change = lap_times.diff().mean()
 
     compound = str(stint_data['Compound'].iloc[0]).lower()
-    print(f'Stint #{stint_num} was on the {compound}: Average lap time change of {average_change:+.3f} seconds per lap')
-
-# Saves the laps to a CSV file
-driver_laps.to_csv(f'../data/{driver}_laps.csv', index=False)
+    print(f'Stint #{int(stint_num)} was on the {compound}: Average lap time change of {average_change:+.3f} seconds per lap')
 
 # -----------Creating the graph----------- #
 
