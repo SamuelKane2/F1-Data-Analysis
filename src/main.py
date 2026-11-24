@@ -5,6 +5,12 @@ from fastf1.exceptions import FuzzyMatchError
 
 from matplotlib import pyplot
 from matplotlib.pyplot import figure
+from matplotlib.ticker import FuncFormatter
+
+def format_laptime(seconds, position):
+    minutes = int(seconds // 60)
+    remaining_seconds = seconds % 60
+    return f'{minutes}:{remaining_seconds:06.3f}'
 
 import numpy
 import pandas
@@ -30,13 +36,13 @@ while True:
 
 # -----------Grand Prix and validation----------- #
 while True:
-    grand_prix = input("Enter a Grand Prix: ").strip()
+    grand_prix = input('Enter a Grand Prix: ').strip()
 
     try:
         event = fastf1.get_event(year, grand_prix)
         break
     except FuzzyMatchError:
-        print("Grand Prix data not found, try again.")
+        print('Grand Prix data not found, try again.')
 
 # -----------Session validation----------- #
 available_sessions = event.filter(regex='^Session[1-5]$').values.flatten()
@@ -66,28 +72,14 @@ while True:
         continue
     break
 
-while True:
-    want_accurate = input('Do you want to exclude inaccurate laps (yes, no)? ')
-    if want_accurate.lower() == 'yes':
-        accurate = True
-        break
-    elif want_accurate.lower() == 'no':
-        accurate = False
-        break
-    else:
-        print('yes or no please')
-
-# Picks out accurate laps for the driver
-if accurate:
-    driver_laps = race.laps.pick_drivers(driver).pick_accurate()
-else:
-    driver_laps = race.laps.pick_drivers(driver)
+driver_laps = race.laps.pick_drivers(driver).pick_accurate()
 
 # -----------Analyzing the data----------- #
-driver_laps = driver_laps[['LapNumber', 'LapTime', 'Stint', 'Compound']]
+driver_laps = driver_laps[['LapNumber', 'LapTime', 'Stint', 'Compound', 'TyreLife']]
 
 stints = driver_laps.groupby('Stint')
 
+# Average lap time per stint #
 for stint_num, stint_data in stints:
     secs = stint_data['LapTime'].mean().total_seconds()
     mins = secs // 60
@@ -95,13 +87,25 @@ for stint_num, stint_data in stints:
     compound = str(stint_data['Compound'].iloc[0]).lower()
     print(f'Stint #{stint_num} was on the {compound} tire had an average laptime of {average_lap_time}')
 
+print()
+
+# Difference in average lap time for each stint #
+for stint_num, stint_data in stints:
+    stint_data = stint_data.sort_values('LapNumber')
+
+    lap_times = stint_data['LapTime'].dt.total_seconds()
+    average_change = lap_times.diff().mean()
+
+    compound = str(stint_data['Compound'].iloc[0]).lower()
+    print(f'Stint #{stint_num} was on the {compound}: Average lap time change of {average_change:+.3f} seconds per lap')
+
 # Saves the laps to a CSV file
 driver_laps.to_csv(f'../data/{driver}_laps.csv', index=False)
 
 # -----------Creating the graph----------- #
 
 #Enabling something
-fastf1.plotting.setup_mpl(mpl_timedelta_support=True, color_scheme="fastf1")
+fastf1.plotting.setup_mpl(mpl_timedelta_support=True, color_scheme='fastf1')
 
 fig, ax = pyplot.subplots()
 style = plotting.get_driver_style(identifier=driver,style=['color','linestyle'], session=race)
