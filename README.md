@@ -25,14 +25,17 @@ External data source: Formula 1 timing data through FastF1.
 #### Prerequisites
 - Python 3.12
 - Git
-- A Python IDE
+- IntelliJ
 - An F1 account
   - Unfortunately FastF1 requires an F1 account to get the data
 
 #### Installation
 - Clone the repository
+- Create a virtual environment through IntelliJ
 - Install FastF1, Pandas, and Matplotlib
-- Run the program using an IDE
+- (If possible) Follow FastF1's authentication instructions
+  - https://github.com/theOehrly/Fast-F1/blob/main/docs/api_reference/accounts_auth.rst
+- Run the program using your IDE
 
 ## Example
 Welcome, please input the year, Grand Prix, session, and driver you want data from  
@@ -56,7 +59,9 @@ Stint #2 was on the medium: Average lap time change of -0.157 seconds per lap
 - [x] Calculate average lap times per stint
 - [x] Calculate average lap-time change per lap
 - [x] Create lap-time visualizations
-- [ ] Compare tire degradation across multiple drivers
+- [x] Compare tire degradation across multiple drivers
 - [ ] Improve data visualization and presentation
+- [ ] Create an easy-to-use interface
 
 ## Demo
+YouTube link: https://youtu.be/llLSkNwblb4

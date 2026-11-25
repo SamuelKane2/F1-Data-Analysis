@@ -1,10 +1,8 @@
 import fastf1
 from fastf1 import plotting
-from fastf1 import utils
 from fastf1.exceptions import FuzzyMatchError
 
 from matplotlib import pyplot
-from matplotlib.pyplot import figure
 from matplotlib.ticker import FuncFormatter
 
 def format_laptime(seconds, position):
@@ -12,7 +10,6 @@ def format_laptime(seconds, position):
     remaining_seconds = seconds % 60
     return f'{minutes}:{remaining_seconds:06.3f}'
 
-import numpy
 import pandas
 
 fastf1.Cache.configure(cache_dir='cache')
