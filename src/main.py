@@ -65,39 +65,44 @@ race = fastf1.get_session(year, grand_prix, session)
 race.load(laps=True, telemetry=True, weather=False, messages=False)
 
 # -----------Driver validation----------- #
+drivers = {}
 while True:
     driver = input('What driver do you want to analyze (Ex: Ham, Ver)? ').strip().upper()
     if driver not in race.laps['Driver'].unique():
         print('Driver not found in this session, try again.')
         continue
-    break
 
-driver_laps = race.laps.pick_drivers(driver).pick_accurate()
+    drivers[driver] = race.laps.pick_drivers(driver).pick_accurate()
+    another = input('Would you like to add another driver (y/n)? ')
+
+    if another != 'y':
+        break
 
 # -----------Analyzing the data----------- #
-driver_laps = driver_laps[['LapNumber', 'LapTime', 'Stint', 'Compound', 'TyreLife']]
+for driver, driver_laps in drivers.items():
+    print(f'\n--- {driver} ---')
+    driver_laps = driver_laps[['LapNumber', 'LapTime', 'Stint', 'Compound', 'TyreLife']]
+    stints = driver_laps.groupby('Stint')
 
-stints = driver_laps.groupby('Stint')
+    # Average lap time per stint #
+    for stint_num, stint_data in stints:
+        secs = stint_data['LapTime'].mean().total_seconds()
+        mins = secs // 60
+        average_lap_time = f'{mins:g}:{secs-mins*60:.3f}'
+        compound = str(stint_data['Compound'].iloc[0]).lower()
+        print(f'Stint #{int(stint_num)} was on the {compound} tire had an average laptime of {average_lap_time}')
 
-# Average lap time per stint #
-for stint_num, stint_data in stints:
-    secs = stint_data['LapTime'].mean().total_seconds()
-    mins = secs // 60
-    average_lap_time = f'{mins:g}:{secs-mins*60:.3f}'
-    compound = str(stint_data['Compound'].iloc[0]).lower()
-    print(f'Stint #{int(stint_num)} was on the {compound} tire had an average laptime of {average_lap_time}')
+    print()
 
-print()
+    # Difference in average lap time for each stint #
+    for stint_num, stint_data in stints:
+        stint_data = stint_data.sort_values('LapNumber')
 
-# Difference in average lap time for each stint #
-for stint_num, stint_data in stints:
-    stint_data = stint_data.sort_values('LapNumber')
+        lap_times = stint_data['LapTime'].dt.total_seconds()
+        average_change = lap_times.diff().mean()
 
-    lap_times = stint_data['LapTime'].dt.total_seconds()
-    average_change = lap_times.diff().mean()
-
-    compound = str(stint_data['Compound'].iloc[0]).lower()
-    print(f'Stint #{int(stint_num)} was on the {compound}: Average lap time change of {average_change:+.3f} seconds per lap')
+        compound = str(stint_data['Compound'].iloc[0]).lower()
+        print(f'Stint #{int(stint_num)} was on the {compound}: Average lap time change of {average_change:+.3f} seconds per lap')
 
 # -----------Creating the graph----------- #
 
@@ -105,9 +110,13 @@ for stint_num, stint_data in stints:
 fastf1.plotting.setup_mpl(mpl_timedelta_support=True, color_scheme='fastf1')
 
 fig, ax = pyplot.subplots()
-style = plotting.get_driver_style(identifier=driver,style=['color','linestyle'], session=race)
-lap_times = driver_laps['LapTime'].dt.total_seconds()
-ax.plot(driver_laps['LapNumber'], lap_times, **style, label=driver)
+
+for driver, driver_laps in drivers.items():
+    style = plotting.get_driver_style(identifier=driver,style=['color','linestyle'], session=race)
+    lap_times = driver_laps['LapTime'].dt.total_seconds()
+    ax.plot(driver_laps['LapNumber'], lap_times, **style, label=driver)
+
+ax.yaxis.set_major_formatter(FuncFormatter(format_laptime))
 
 ax.set_xlabel('Lap Number')
 ax.set_ylabel('Lap Time')
